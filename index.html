@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV.Stream - خدمة البث المباشر</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .background-video{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
+header, .container, footer {
+    position: relative;
+    z-index: 1;
+}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #e94560;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #e94560;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        nav button.active {
+            background: #e94560;
+            color: white;
+        }
+
+        nav button:hover {
+            background: #e94560;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #e94560 0%, #ff6b9d 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: #aaa;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #e94560 0%, #ff6b9d 100%);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(233, 69, 96, 0.4);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 10px;
+            border: 1px solid rgba(233, 69, 96, 0.3);
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-card:hover {
+            background: rgba(233, 69, 96, 0.15);
+            border-color: #e94560;
+            transform: translateY(-5px);
+        }
+
+        .feature-image {
+            width: 100%;
+            height: 180px;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .feature-card p {
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .pricing-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(233, 69, 96, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #e94560 0%, #ff6b9d 100%);
+        }
+
+        .pricing-card.popular {
+            border-color: #e94560;
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(233, 69, 96, 0.2);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #e94560;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .pricing-card .period {
+            color: #aaa;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #e94560;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-currency {
+            font-size: 1.2rem;
+            color: #e94560;
+        }
+
+        .price-period {
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+
+        .features-list {
+            text-align: right;
+            margin: 1.5rem 0;
+            list-style: none;
+        }
+
+        .features-list li {
+            padding: 0.7rem 0;
+            color: #aaa;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.95rem;
+        }
+
+        .features-list li:last-child {
+            border-bottom: none;
+        }
+
+        .features-list li:before {
+            content: '✓ ';
+            color: #e94560;
+            font-weight: bold;
+            margin-left: 0.5rem;
+        }
+
+        .subscribe-btn {
+            background: linear-gradient(135deg, #e94560 0%, #ff6b9d 100%);
+            color: white;
+            border: none;
+            padding: 0.9rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .subscribe-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(233, 69, 96, 0.4);
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.7);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+            border-top: 2px solid #e94560;
+            color: #aaa;
+        }
+
+        .whatsapp-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #25d366 0%, #1fa85d 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
+            transition: all 0.3s ease;
+            z-index: 999;
+            text-decoration: none;
+            border: none;
+        }
+
+        .whatsapp-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 30px rgba(37, 211, 102, 0.6);
+        }
+
+        .whatsapp-button i {
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .whatsapp-tooltip {
+            position: absolute;
+            right: 75px;
+            bottom: 15px;
+            background: #25d366;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .whatsapp-button:hover .whatsapp-tooltip {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            nav {
+                gap: 1rem;
+            }
+
+            nav button {
+                font-size: 0.9rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .pricing-card.popular {
+                transform: scale(1);
+            }
+
+            header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .whatsapp-button {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+
+            .whatsapp-button i {
+                font-size: 1.5rem;
+            }
+
+            .whatsapp-tooltip {
+                right: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-play-circle"></i>
+            TV.Stream
+        </div>
+        <nav>
+            <button class="nav-btn active" data-page="home">الصفحة الرئيسية</button>
+            <button class="nav-btn" data-page="pricing">الاشتراكات</button>
+        </nav>
+    </header>
+<video autoplay muted loop playsinline class="background-video">
+    <source src="images/bg.mp4" type="video/mp4">
+</video>
+    <div class="container">
+        <div id="home" class="page active">
+            <div class="hero">
+                <h1>🎬 TV.Stream</h1>
+                <p>استمتع بمشاهدة أفضل الأفلام والمسلسلات والقنوات المباشرة بجودة عالية مع TV.Stream</p>
+                <button class="cta-button" onclick="switchPage('pricing')">ابدأ الآن</button>
+            </div>
+
+            <div class="features">
+                <div class="feature-card">
+                    <img class="feature-image" src="images/match.png" alt="image">
+                        <rect width="400" height="300" fill="#1a1a2e"/>
+                        <rect x="50" y="40" width="300" height="200" fill="#0a0a0a" rx="15" stroke="#e94560" stroke-width="4"/>
+                        <rect x="60" y="50" width="280" height="180" fill="#1a1a2e"/>
+                        <circle cx="320" cy="70" r="8" fill="#ff4444" opacity="0.9"/>
+                        <text x="80" y="110" font-size="24" font-weight="bold" fill="#e94560">LIVE</text>
+                        <circle cx="280" cy="140" r="25" fill="#e94560" opacity="0.8"/>
+                        <polygon points="270,125 270,155 305,140" fill="#fff"/>
+                    
+                    <h3>بث مباشر</h3>
+                    <p>قنوات تلفزيونية عالمية وعربية بدون توقف</p>
+                </div>
+
+                <div class="feature-card">
+                    <img class="feature-image" src="images/films.png" alt="image">
+                        <rect width="400" height="300" fill="#0f3460"/>
+                        <rect x="25" y="40" width="100" height="220" fill="#e94560" rx="8"/>
+                        <rect x="150" y="30" width="100" height="240" fill="#ff6b9d" rx="8"/>
+                        <rect x="275" y="50" width="100" height="210" fill="#e94560" rx="8"/>
+                        <text x="75" y="100" font-size="24" text-anchor="middle" fill="#fff">★</text>
+                        <text x="200" y="80" font-size="28" text-anchor="middle" fill="#fff">★★★</text>
+                    
+                    <h3>أفلام ومسلسلات</h3>
+                    <p>مكتبة ضخمة من أحدث الأفلام والمسلسلات</p>
+                </div>
+
+                <div class="feature-card">
+                    <img class="feature-image" src="images/streaming.png" alt="image">
+                        <rect width="400" height="300" fill="#1a1a2e"/>
+                        <rect x="50" y="50" width="300" height="170" fill="#0a0a0a" rx="12" stroke="#e94560" stroke-width="3"/>
+                        <text x="200" y="140" font-size="48" font-weight="bold" fill="#e94560" text-anchor="middle">4K</text>
+                    
+                    <h3>جودة عالية</h3>
+                    <p>بث بجودة 4K و Full HD مع صوت واضح</p>
+                </div>
+
+                <div class="feature-card">
+                    <img class="feature-image" src="images/watch.png" alt="image">
+                        <rect width="400" height="300" fill="#1a1a2e"/>
+                        <rect x="15" y="80" width="90" height="160" fill="#0a0a0a" rx="10" stroke="#e94560" stroke-width="2"/>
+                        <rect x="125" y="50" width="150" height="200" fill="#0a0a0a" rx="12" stroke="#e94560" stroke-width="2"/>
+                        <rect x="295" y="90" width="90" height="70" fill="#0a0a0a" rx="8" stroke="#e94560" stroke-width="2"/>
+                    
+                    <h3>متعدد الأجهزة</h3>
+                    <p>شاهد على التلفاز والهاتف والحاسوب</p>
+                </div>
+
+                <div class="feature-card">
+                   <img class="feature-image" src="images/familly.png" alt="image">
+                        <rect width="400" height="300" fill="#1a1a2e"/>
+                        <rect x="40" y="180" width="320" height="60" fill="#e94560" rx="8" opacity="0.8"/>
+                        <circle cx="80" cy="100" r="18" fill="#ff6b9d"/>
+                        <circle cx="140" cy="80" r="20" fill="#e94560"/>
+                    
+                    <h3>عائلي</h3>
+                    <p>شارك الاشتراك مع أفراد عائلتك</p>
+                </div>
+
+                <div class="feature-card">
+                    <img class="feature-image" src="images/more.png" alt="image">
+                        <rect width="400" height="300" fill="#1a1a2e"/>
+                        <circle cx="150" cy="150" r="70" fill="none" stroke="#e94560" stroke-width="3"/>
+                        <circle cx="250" cy="150" r="70" fill="none" stroke="#e94560" stroke-width="3"/>
+                        <text x="200" y="170" font-size="72" fill="#e94560" text-anchor="middle">∞</text>
+                    
+                    <h3>بلا حدود</h3>
+                    <p>شاهد ما تريد متى تريد بدون إعلانات</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="pricing" class="page">
+            <div class="pricing-header">
+                <h2>خطط الاشتراك في TV.Stream</h2>
+                <p>اختر الخطة التي تناسبك واستمتع بأفضل خدمة بث مع TV.Stream</p>
+            </div>
+
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>ثلاثة أشهر</h3>
+                    <p class="period">اختبر خدمتنا</p>
+                    <div class="price">
+                        <span class="price-currency">100</span>
+                        <span class="price-period"> دم</span>
+                    </div>
+                    <ul class="features-list">
+                        <li>3 أشهر من الخدمة</li>
+                        <li>جودة Full HD</li>
+                        <li>جميع القنوات</li>
+                        <li>دعم فني 24/7</li>
+                    </ul>
+                    <button class="subscribe-btn" onclick="alert('سيتم التواصل معك قريباً')">اشترك الآن</button>
+                </div>
+
+                <div class="pricing-card popular">
+                    <div class="popular-badge">الأكثر شهرة</div>
+                    <h3>ستة أشهر</h3>
+                    <p class="period">أفضل الخيارات</p>
+                    <div class="price">
+                        <span class="price-currency">150</span>
+                        <span class="price-period"> دم</span>
+                    </div>
+                    <ul class="features-list">
+                        <li>6 أشهر من الخدمة</li>
+                        <li>جودة 4K</li>
+                        <li>جميع القنوات</li>
+                        <li>دعم فني 24/7</li>
+                        <li>حسابات متعددة</li>
+                    </ul>
+                    <button class="subscribe-btn" onclick="alert('سيتم التواصل معك قريباً')">اشترك الآن</button>
+                </div>
+
+                <div class="pricing-card">
+                    <h3>سنة كاملة</h3>
+                    <p class="period">الاقتصاد</p>
+                    <div class="price">
+                        <span class="price-currency">250</span>
+                        <span class="price-period"> دم</span>
+                    </div>
+                    <ul class="features-list">
+                        <li>12 شهر من الخدمة</li>
+                        <li>جودة 4K</li>
+                        <li>جميع القنوات</li>
+                        <li>دعم فني 24/7</li>
+                        <li>حسابات متعددة</li>
+                        <li>حفظ المفضلة</li>
+                    </ul>
+                    <button class="subscribe-btn" onclick="alert('سيتم التواصل معك قريباً')">اشترك الآن</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 TV.Stream. جميع الحقوق محفوظة. | خدمة عملاء موثوقة وآمنة</p>
+    </footer>
+
+    <a href="https://wa.me/212661662685?text=مرحبا%20أنا%20أريد%20الاستفسار%20عن%20خدمة%20" class="whatsapp-button" target="_blank" title="اتصل بنا عبر WhatsApp">
+        <div class="whatsapp-tooltip">تواصل معنا</div>
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script>
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                switchPage(this.dataset.page);
+            });
+        });
+
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(pageId).classList.add('active');
+
+            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+        }
+    </script>
+</body>
+</html>
